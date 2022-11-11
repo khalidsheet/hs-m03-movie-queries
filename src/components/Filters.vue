@@ -15,7 +15,7 @@ const genres = computed(() => {
     genreSet.add(g);
   });
 
-  return genreSet;
+  return Array.from(genreSet).sort();
 });
 
 const years = computed(() => {
