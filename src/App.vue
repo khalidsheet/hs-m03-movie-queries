@@ -39,7 +39,7 @@ const handleFilterChanged = ({
     genres.includes(movie.genre.toLocaleLowerCase())
   );
 
-  const allInOne = [...filterByGenres, ...filterByYears];
+  const allInOne = Array.from(new Set([...filterByGenres, ...filterByYears]));
 
   paginatedMovies.value =
     allInOne.length > 0 ? allInOne : movies.slice(0, itemsPerPage.value);
