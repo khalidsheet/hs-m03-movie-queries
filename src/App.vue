@@ -6,16 +6,19 @@ import Filters from "./components/Filters.vue";
 import AvarageRating from "./components/AvarageRating.vue";
 import _movies from "./assets/movies.json";
 import { ref } from "@vue/reactivity";
+import { watch } from "@vue/runtime-core";
 
 const itemsPerPage = ref(10);
 
 // A silly solution I know I know, lol
-let movies = _movies.map((m) => {
+let movies = _movies.slice().map((m) => {
   if (m.genre == "Science Fiction") {
     m.genre = "sci-fi";
   }
   return m;
 });
+
+const moviesSnapshot = ref(movies.slice());
 
 const paginatedMovies = ref(movies.slice(0, itemsPerPage.value));
 
@@ -30,19 +33,23 @@ const handlePageChange = (page) => {
   );
 };
 
-const handleFilterChanged = ({
-  selectedYears: years,
-  selectedGenres: genres,
-}) => {
-  const filterByYears = movies.filter((movie) => years.includes(movie.year));
-  const filterByGenres = movies.filter((movie) =>
-    genres.includes(movie.genre.toLocaleLowerCase())
-  );
+const filterByYear = (movie, years) => {
+  if (years.length === 0) return true;
+  return years.includes(movie.year);
+};
 
-  const allInOne = Array.from(new Set([...filterByGenres, ...filterByYears]));
+const filterByGenre = (movie, genres) => {
+  if (genres.length === 0) return true;
+  return genres.includes(movie.genre.toLocaleLowerCase());
+};
 
-  paginatedMovies.value =
-    allInOne.length > 0 ? allInOne : movies.slice(0, itemsPerPage.value);
+const handleFilterChanged = ({ selectedYears, selectedGenres }) => {
+  const filtered = movies
+    .filter((movie) => filterByYear(movie, selectedYears))
+    .filter((movie) => filterByGenre(movie, selectedGenres));
+
+  paginatedMovies.value = filtered;
+  moviesSnapshot.value = filtered;
 };
 
 const handleSearchChanged = (query) => {
@@ -66,7 +73,8 @@ const handleSearchChanged = (query) => {
         <div class="row">
           <div class="col-12">
             <div class="fs-3 px-3 my-4">
-              Movies Query <AvarageRating :movies="movies" />
+              Movies Query
+              <AvarageRating :movies="moviesSnapshot" />
             </div>
           </div>
           <div class="col-12">
@@ -94,7 +102,7 @@ const handleSearchChanged = (query) => {
                   class="col-lg-6 col-md-6 col-lg-6 col-sm-12 text-lg-end text-sm-center"
                 >
                   <Pagination
-                    :movies="movies"
+                    :movies="moviesSnapshot"
                     :items-per-page="Number(itemsPerPage)"
                     @page-changed="handlePageChange"
                   />

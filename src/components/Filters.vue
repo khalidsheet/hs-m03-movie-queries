@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref } from "vue";
+import { computed, ref, capitalize } from "vue";
 
 const props = defineProps(["movies"]);
 const selectedGenres = ref([]);
@@ -73,7 +73,7 @@ const years = computed(() => {
               "
             />
             <label class="form-check-label" :for="i">
-              {{ genre }}
+              {{ capitalize(genre) }}
             </label>
           </div>
         </div>

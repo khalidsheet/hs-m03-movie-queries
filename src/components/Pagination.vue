@@ -1,6 +1,5 @@
 <script setup>
-import { computed, ref } from "@vue/runtime-core";
-
+import { computed, ref, watch } from "@vue/runtime-core";
 /**
  * so this component needs to know about the total elements and
  * chunk it into pages with a help from "itemsPerPage"
@@ -13,7 +12,15 @@ const props = defineProps({
 const emit = defineEmits(["pageChanged"]);
 
 const currentPage = ref(1);
-const totalPages = computed(() => props.movies.length / props.itemsPerPage);
+const totalPages = ref(props.movies.length / props.itemsPerPage);
+
+watch([props], () => {
+  totalPages.value = Math.ceil(props.movies.length / props.itemsPerPage);
+
+  if (currentPage.value > totalPages.value) {
+    currentPage.value = 1;
+  }
+});
 
 const paginationRules = computed(() => ({
   hasNextPage: currentPage.value < totalPages.value,

@@ -13,7 +13,17 @@ const avarageRating = computed(() => {
 </script>
 
 <template>
-  <div class="d-inline-block px-2">
+  <div
+    class="d-inline-block px-2"
+    data-bs-toggle="tooltip"
+    data-bs-placement="top"
+    :data-bs-title="
+      'The avarage of all movies rating, ' +
+      (avarageRating < 3.5
+        ? 'Please try to find better movies to watch.'
+        : 'Great! keep it up, you have a sick collection')
+    "
+  >
     <img src="../../src/assets/star.svg" alt="" /> {{ avarageRating }}
   </div>
 </template>
